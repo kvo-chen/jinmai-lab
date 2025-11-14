@@ -1,18 +1,20 @@
+import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import Dashboard from "@/pages/Dashboard";
-import Explore from "@/pages/Explore";
-import Create from "@/pages/Create";
-import Admin from "@/pages/admin/Admin";
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Explore = lazy(() => import("@/pages/Explore"));
+const Create = lazy(() => import("@/pages/Create"));
 import PrivateRoute from "@/components/PrivateRoute";
 import AdminRoute from "@/components/AdminRoute";
-import CulturalKnowledge from "@/pages/CulturalKnowledge";
-import WorksDetail from "@/pages/WorksDetail";
-import SocialFeed from "@/pages/SocialFeed";
-import UserRelationships from "@/pages/UserRelationships";
-import Works from "@/pages/Works";
+const CulturalKnowledge = lazy(() => import("@/pages/CulturalKnowledge"));
+const WorksDetail = lazy(() => import("@/pages/WorksDetail"));
+const SocialFeed = lazy(() => import("@/pages/SocialFeed"));
+const UserRelationships = lazy(() => import("@/pages/UserRelationships"));
+const Works = lazy(() => import("@/pages/Works"));
+
+const Admin = lazy(() => import("@/pages/admin/Admin"));
 
 export default function App() {
   return (
@@ -27,7 +29,9 @@ export default function App() {
           path="/dashboard" 
           element={
             <PrivateRoute>
-              <Dashboard />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <Dashboard />
+              </Suspense>
             </PrivateRoute>
           } 
         />
@@ -36,7 +40,9 @@ export default function App() {
           path="/create" 
           element={
             <PrivateRoute>
-              <Create />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <Create />
+              </Suspense>
             </PrivateRoute>
           } 
         />
@@ -45,7 +51,9 @@ export default function App() {
           path="/knowledge" 
           element={
             <PrivateRoute>
-              <CulturalKnowledge />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <CulturalKnowledge />
+              </Suspense>
             </PrivateRoute>
           } 
         />
@@ -54,7 +62,9 @@ export default function App() {
           path="/knowledge/:type/:id" 
           element={
             <PrivateRoute>
-              <CulturalKnowledge />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <CulturalKnowledge />
+              </Suspense>
             </PrivateRoute>
           } 
         />
@@ -64,7 +74,9 @@ export default function App() {
           path="/works" 
           element={
             <PrivateRoute>
-              <Works />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <Works />
+              </Suspense>
             </PrivateRoute>
           } 
         />
@@ -72,7 +84,9 @@ export default function App() {
           path="/works/:id" 
           element={
             <PrivateRoute>
-              <WorksDetail />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <WorksDetail />
+              </Suspense>
             </PrivateRoute>
           } 
         />
@@ -82,7 +96,9 @@ export default function App() {
           path="/social" 
           element={
             <PrivateRoute>
-              <SocialFeed />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <SocialFeed />
+              </Suspense>
             </PrivateRoute>
           } 
         />
@@ -91,7 +107,9 @@ export default function App() {
           path="/user-relationships/:type" 
           element={
             <PrivateRoute>
-              <UserRelationships />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <UserRelationships />
+              </Suspense>
             </PrivateRoute>
           } 
         />
@@ -101,7 +119,9 @@ export default function App() {
           path="/admin" 
           element={
             <AdminRoute>
-              <Admin />
+              <Suspense fallback={<div style={{padding:16}}>加载中...</div>}>
+                <Admin />
+              </Suspense>
             </AdminRoute>
           } 
         />

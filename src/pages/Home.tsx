@@ -10,6 +10,8 @@ export default function Home() {
   const { toggleTheme, isDark } = useTheme();
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
+  const buildTime = (import.meta as any).env?.VITE_APP_BUILD_TIME || '';
+  const commit = (import.meta as any).env?.VITE_APP_COMMIT || '';
   
   const [currentSection, setCurrentSection] = useState('attract');
   const tianjinBrands = ['泥人张','杨柳青年画','狗不理包子','桂发祥麻花','耳朵眼炸糕','果仁张','盛锡福','老美华','正兴德茶庄'];
@@ -427,6 +429,9 @@ export default function Home() {
               <a href="#" className="hover:opacity-100 transition-opacity">隐私政策</a>
               <a href="#" className="hover:opacity-100 transition-opacity">服务条款</a>
               <a href="#" className="hover:opacity-100 transition-opacity">Cookie政策</a>
+            </div>
+            <div className="mt-4 md:mt-0 text-xs opacity-60">
+              <span>版本标识 {commit ? String(commit).slice(0,7) : 'dev'} • {buildTime || '未设置'}</span>
             </div>
           </div>
         </div>

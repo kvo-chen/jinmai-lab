@@ -258,6 +258,8 @@ export default function Admin() {
               src={user?.avatar || 'https://space.coze.cn/api/coze_space/gen_image?image_size=square&prompt=Admin%20avatar&sign=642683509e21425ee6e24388ff9dcff1'} 
               alt={user?.username || '管理员'} 
               className="h-10 w-10 rounded-full mr-3"
+              loading="lazy"
+              decoding="async"
             />
             <div className="flex-1">
               <p className="font-medium">{user?.username}</p>
@@ -495,6 +497,10 @@ export default function Admin() {
                           src={submission.thumbnail} 
                           alt={submission.title} 
                           className="w-16 h-16 rounded-lg object-cover mr-4"
+                          loading="lazy"
+                          decoding="async"
+                          width="64"
+                          height="64"
                         />
                         <div className="flex-1">
                           <h3 className="font-medium mb-1">{submission.title}</h3>
@@ -554,6 +560,10 @@ export default function Admin() {
                           src={app.thumbnail} 
                           alt={app.title} 
                           className="w-16 h-16 rounded-lg object-cover mr-4"
+                          loading="lazy"
+                          decoding="async"
+                          width="64"
+                          height="64"
                         />
                         <div className="flex-1">
                           <h3 className="font-medium mb-1">{app.title}</h3>
@@ -607,6 +617,10 @@ export default function Admin() {
                       src={submission.thumbnail} 
                       alt={submission.title} 
                       className="w-full md:w-48 h-48 object-cover rounded-lg mb-4 md:mb-0 md:mr-6"
+                      loading="lazy"
+                      decoding="async"
+                      width="192"
+                      height="192"
                     />
                     
                     <div className="flex-1">
