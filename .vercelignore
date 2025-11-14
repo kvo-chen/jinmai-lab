@@ -1,0 +1,7 @@
+api/
+src/
+*.log
+.env
+.trae/
+node_modules/
+!api/server.js
