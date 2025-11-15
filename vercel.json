@@ -1,6 +1,6 @@
 {
   "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
+  "outputDirectory": "dist/static",
   "framework": "vite",
   "rewrites": [
     {
@@ -12,9 +12,7 @@
       "destination": "/index.html"
     }
   ],
-  "redirects": [
-    { "source": "/", "destination": "https://www.jinmai-lab.tech/", "permanent": true }
-  ],
+
   "headers": [
     {
       "source": "/",
