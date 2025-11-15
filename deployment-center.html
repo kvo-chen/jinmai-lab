@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 金麦实验室 - 部署控制中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .deployment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .deployment-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .deployment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .deployment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .platform-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+        
+        .platform-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .card-description {
+            color: #718096;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .deploy-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .deploy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.4);
+        }
+        
+        .alternative-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(66, 153, 225, 0.3);
+            font-size: 0.95em;
+        }
+        
+        .alternative-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 30px rgba(66, 153, 225, 0.4);
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        .status-ready {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-error {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        
+        .status-warning {
+            background: #fef5e7;
+            color: #c05621;
+        }
+        
+        .quick-actions {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .quick-actions h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .info-panel {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .info-panel h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .step-list li {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .emergency-deploy {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .emergency-button {
+            background: white;
+            color: #dd6b20;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2em;
+            display: inline-block;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .emergency-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 部署控制中心</h1>
+            <p>选择你的部署方式，一键上线金麦实验室！</p>
+        </div>
+        
+        <div class="quick-actions">
+            <h2>⚡ 快速部署</h2>
+            <div class="action-buttons">
+                <a href="https://vercel.com/new/clone?repository-url=https://github.com/kvo-chen/jinmai-lab" 
+                   class="deploy-button" target="_blank">
+                    🎯 Vercel 一键部署
+                </a>
+                <a href="https://app.netlify.com/drop" 
+                   class="alternative-button" target="_blank">
+                    📁 Netlify 拖拽部署
+                </a>
+                <a href="http://localhost:3000" 
+                   class="alternative-button" target="_blank">
+                    👀 本地预览
+                </a>
+            </div>
+        </div>
+        
+        <div class="deployment-grid">
+            <div class="deployment-card">
+                <div class="card-header">
+                    <div class="platform-icon">⚡</div>
+                    <div class="platform-name">Vercel</div>
+                </div>
+                <div class="card-description">
+                    最简单的一键部署方案，自动 HTTPS，全球 CDN 加速，完全免费！
+                </div>
+                <a href="https://vercel.com/new/clone?repository-url=https://github.com/kvo-chen/jinmai-lab" 
+                   class="deploy-button" target="_blank">
+                    立即部署
+                </a>
+                <div class="info-panel">
+                    <h3>📝 部署步骤：</h3>
+                    <ul class="step-list">
+                        <li><div class="step-number">1</div>点击上方按钮</li>
+                        <li><div class="step-number">2</div>用 GitHub 账号登录</li>
+                        <li><div class="step-number">3</div>点击 "Deploy"</li>
+                        <li><div class="step-number">4</div>等待 1-2 分钟完成</li>
+                    </ul>
+                </div>
+                <div class="status-indicator status-ready">
+                    ✅ 推荐方案 - 完全免费
+                </div>
+            </div>
+            
+            <div class="deployment-card">
+                <div class="card-header">
+                    <div class="platform-icon">📁</div>
+                    <div class="platform-name">Netlify</div>
+                </div>
+                <div class="card-description">
+                    拖拽式部署，简单易用，支持自定义域名，免费额度充足。
+                </div>
+                <a href="https://app.netlify.com/drop" 
+                   class="deploy-button" target="_blank">
+                    开始部署
+                </a>
+                <div class="info-panel">
+                    <h3>📝 部署步骤：</h3>
+                    <ul class="step-list">
+                        <li><div class="step-number">1</div>打开 Netlify Drop</li>
+                        <li><div class="step-number">2</div>拖拽 dist 文件夹到网页</li>
+                        <li><div class="step-number">3</div>自动获得网址</li>
+                        <li><div class="step-number">4</div>完成！</li>
+                    </ul>
+                </div>
+                <div class="status-indicator status-ready">
+                    ✅ 免费方案 - 无需信用卡
+                </div>
+            </div>
+            
+            <div class="deployment-card">
+                <div class="card-header">
+                    <div class="platform-icon">🏠</div>
+                    <div class="platform-name">本地预览</div>
+                </div>
+                <div class="card-description">
+                    立即在本地查看效果，无需部署，适合测试和开发。
+                </div>
+                <a href="http://localhost:3000" 
+                   class="deploy-button" target="_blank">
+                    查看预览
+                </a>
+                <div class="info-panel">
+                    <h3>📝 本地访问：</h3>
+                    <ul class="step-list">
+                        <li><div class="step-number">1</div>确保 npm run preview 正在运行</li>
+                        <li><div class="step-number">2</div>点击上方按钮</li>
+                        <li><div class="step-number">3</div>或手动访问 localhost:3000</li>
+                    </ul>
+                </div>
+                <div class="status-indicator status-ready">
+                    ✅ 立即可用 - 无需网络
+                </div>
+            </div>
+            
+            <div class="deployment-card">
+                <div class="card-header">
+                    <div class="platform-icon">⚙️</div>
+                    <div class="platform-name">GitHub Pages</div>
+                </div>
+                <div class="card-description">
+                    传统方案，需要公开仓库或付费。适合 GitHub 生态深度集成。
+                </div>
+                <div class="warning" style="background: #fef5e7; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                    <strong>⚠️ 注意：</strong> 私有仓库需要付费计划
+                </div>
+                <div class="action-buttons">
+                    <a href="https://github.com/kvo-chen/jinmai-lab/settings/pages" 
+                       class="alternative-button" target="_blank">
+                        设置 Pages
+                    </a>
+                    <button onclick="showGHInstructions()" 
+                            class="alternative-button">
+                        查看教程
+                    </button>
+                </div>
+                <div class="status-indicator status-warning">
+                    ⚠️ 需要设置 - 有门槛
+                </div>
+            </div>
+        </div>
+        
+        <div class="emergency-deploy">
+            <h2>🚨 紧急部署方案</h2>
+            <p>如果以上都不行，试试这个终极方案！</p>
+            <button onclick="emergencyDeploy()" class="emergency-button">
+                🔥 一键紧急部署
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function showGHInstructions() {
+            alert('GitHub Pages 设置步骤：\n\n1. 访问仓库设置页面\n2. 找到 Pages 选项\n3. 选择 GitHub Actions 作为源\n4. 保存设置\n\n注意：私有仓库需要付费计划，建议先用 Vercel！');
+        }
+        
+        function emergencyDeploy() {
+            const options = [
+                'https://vercel.com/new/clone?repository-url=https://github.com/kvo-chen/jinmai-lab',
+                'https://app.netlify.com/drop',
+                'https://pages.github.com/',
+                'http://localhost:3000'
+            ];
+            
+            const randomOption = options[Math.floor(Math.random() * options.length)];
+            
+            if (confirm('🚀 启动紧急部署方案！\n\n这会打开：' + randomOption + '\n\n准备好了吗？')) {
+                window.open(randomOption, '_blank');
+            }
+        }
+        
+        // 添加一些动画效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.deployment-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
