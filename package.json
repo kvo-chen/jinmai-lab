@@ -7,7 +7,7 @@
     "dev:client": "vite --host --port 3000",
     "dev": "vite --host --port 3000",
     "build:github-pages": "vite build --outDir dist --base /jinmai-lab/",
-    "build": "pnpm build:github-pages && node -e \"const fs=require('fs'); const path=require('path'); const outDir='dist'; try { const pkg=JSON.parse(fs.readFileSync('package.json','utf-8')); const ver=pkg.version || '0.0.0'; const stamp=new Date().toISOString(); fs.writeFileSync(path.join(outDir,'version.txt'), `Build Time: ${stamp}\\nVersion: ${ver}\\nBuild: SUCCESS\\n`); } catch(e) { fs.writeFileSync(path.join(outDir,'version.txt'), `Build Time: ${new Date().toISOString()}\\nVersion: 0.0.0\\nBuild: SUCCESS\\n`); }\"",
+    "build": "npm run build:github-pages",
     "preview": "vite preview --port 3000"
   },
   "dependencies": {

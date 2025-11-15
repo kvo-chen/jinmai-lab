@@ -2,9 +2,10 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,17 +27,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+          cache: 'npm'
           
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
         
       - name: Build project
-        run: pnpm build
+        run: npm run build:github-pages
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
