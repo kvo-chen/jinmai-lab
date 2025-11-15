@@ -7,7 +7,8 @@
     "dev:client": "vite --host --port 3000",
     "dev": "vite --host --port 3000",
     "build:github-pages": "vite build --outDir dist --base /jinmai-lab/",
-    "build": "npm run build:github-pages",
+    "build:vercel": "vite build --outDir dist",
+    "build": "npm run build:vercel",
     "preview": "vite preview --port 3000"
   },
   "dependencies": {
