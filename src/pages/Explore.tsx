@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '@/contexts/authContext';
 import { toast } from 'sonner';
+import { Search, Star, Eye, ThumbsUp, MessageCircle, Heart, ChevronLeft, ChevronRight, Plus, ChevronDown } from 'lucide-react';
 
 // 模拟作品数据
 const mockWorks = [
@@ -101,6 +102,7 @@ export default function Explore() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredWorks, setFilteredWorks] = useState(mockWorks);
   const [isLoading, setIsLoading] = useState(true);
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   
   // 模拟加载数据
   useEffect(() => {
@@ -109,26 +111,30 @@ export default function Explore() {
     }, 800);
   }, []);
   
-  // 筛选作品
+  // 筛选作品 - 添加防抖优化
   useEffect(() => {
-    let result = mockWorks;
-    
-    // 按分类筛选
-    if (selectedCategory !== '全部') {
-      result = result.filter(work => work.category === selectedCategory);
-    }
-    
-    // 按搜索词筛选
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(work => 
-        work.title.toLowerCase().includes(term) || 
-        work.creator.toLowerCase().includes(term) ||
-        work.tags.some(tag => tag.toLowerCase().includes(term))
-      );
-    }
-    
-    setFilteredWorks(result);
+    const timer = setTimeout(() => {
+      let result = mockWorks;
+      
+      // 按分类筛选
+      if (selectedCategory !== '全部') {
+        result = result.filter(work => work.category === selectedCategory);
+      }
+      
+      // 按搜索词筛选
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        result = result.filter(work => 
+          work.title.toLowerCase().includes(term) || 
+          work.creator.toLowerCase().includes(term) ||
+          work.tags.some(tag => tag.toLowerCase().includes(term))
+        );
+      }
+      
+      setFilteredWorks(result);
+    }, 300); // 300ms 防抖
+
+    return () => clearTimeout(timer);
   }, [selectedCategory, searchTerm]);
   
   const handleWorkClick = (workId: number) => {
@@ -143,6 +149,17 @@ export default function Explore() {
     } else {
       navigate('/create');
     }
+  };
+
+  const handleImageError = (workId: number) => {
+    setImageErrors(prev => ({ ...prev, [workId]: true }));
+  };
+
+  const getPlaceholderImage = (type: 'thumbnail' | 'avatar') => {
+    if (type === 'thumbnail') {
+      return `https://via.placeholder.com/400x300/e5e7eb/9ca3af?text=作品封面`;
+    }
+    return `https://via.placeholder.com/100x100/e5e7eb/9ca3af?text=用户`;
   };
   
   // 骨架屏加载状态
@@ -186,10 +203,24 @@ export default function Explore() {
             {/* 作品网格骨架屏 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="space-y-3">
-                  <div className={`h-56 rounded-xl ${isDark ? 'bg-gray-800' : 'bg-white'} animate-pulse`}></div>
-                  <div className={`h-4 w-3/4 rounded ${isDark ? 'bg-gray-800' : 'bg-white'} animate-pulse`}></div>
-                  <div className={`h-3 w-1/2 rounded ${isDark ? 'bg-gray-800' : 'bg-white'} animate-pulse`}></div>
+                <div key={i} className={`${isDark ? 'bg-gray-800' : 'bg-white'} rounded-2xl overflow-hidden shadow-md`}>
+                  <div className={`h-48 ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                  <div className="p-4 space-y-3">
+                    <div className={`h-4 w-3/4 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-6 h-6 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                      <div className={`h-3 w-1/2 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <div className={`h-6 w-16 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                      <div className={`h-6 w-12 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                    </div>
+                    <div className="flex justify-between">
+                      <div className={`h-4 w-12 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                      <div className={`h-4 w-12 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                      <div className={`h-4 w-12 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -230,19 +261,19 @@ export default function Explore() {
           transition={{ duration: 0.5 }}
         >
           <div className="relative">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="搜索作品、创作者或标签..."
-              className={`w-full pl-12 pr-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                isDark 
-                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border' 
-                  : 'bg-gray-100 border-gray-200 text-gray-900 placeholder-gray-400 border'
-              }`}
-            />
-            <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          </div>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="搜索作品、创作者或标签..."
+                className={`w-full pl-12 pr-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 border' 
+                    : 'bg-gray-100 border-gray-200 text-gray-900 placeholder-gray-400 border'
+                }`}
+              />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            </div>
         </motion.div>
         
         {/* 分类筛选 */}
@@ -280,7 +311,7 @@ export default function Explore() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h2 className="text-2xl font-bold mb-6 flex items-center">
-              <i className="fas fa-star text-yellow-500 mr-2"></i>
+              <Star className="text-yellow-500 mr-2 w-6 h-6" />
               精选作品
             </h2>
             
@@ -296,9 +327,11 @@ export default function Explore() {
                     >
                       <div className="relative">
                         <img 
-                          src={work.thumbnail} 
+                          src={imageErrors[work.id] ? getPlaceholderImage('thumbnail') : work.thumbnail} 
                           alt={work.title} 
                           className="w-full h-48 object-cover"
+                          onError={() => handleImageError(work.id)}
+                          loading="lazy"
                         />
                         <div className="absolute top-3 left-3">
                           <span className="bg-red-600 text-white text-xs px-2 py-1 rounded-full">精选</span>
@@ -311,7 +344,7 @@ export default function Explore() {
                             }}
                             className="bg-black bg-opacity-30 hover:bg-opacity-50 text-white p-2 rounded-full transition-colors"
                           >
-                            <i className="far fa-heart"></i>
+                            <Heart className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
@@ -335,15 +368,15 @@ export default function Explore() {
                         
                         <div className="flex justify-between text-sm">
                           <div className="flex items-center">
-                            <i className="far fa-eye mr-1"></i>
+                            <Eye className="w-4 h-4 mr-1" />
                             <span>{work.views}</span>
                           </div>
                           <div className="flex items-center">
-                            <i className="far fa-thumbs-up mr-1"></i>
+                            <ThumbsUp className="w-4 h-4 mr-1" />
                             <span>{work.likes}</span>
                           </div>
                           <div className="flex items-center">
-                            <i className="far fa-comment mr-1"></i>
+                            <MessageCircle className="w-4 h-4 mr-1" />
                             <span>{work.comments}</span>
                           </div>
                         </div>
@@ -355,10 +388,10 @@ export default function Explore() {
               
               {/* 左右滚动箭头 */}
               <button className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 hidden md:block bg-white text-black p-2 rounded-full shadow-md">
-                <i className="fas fa-chevron-left"></i>
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 hidden md:block bg-white text-black p-2 rounded-full shadow-md">
-                <i className="fas fa-chevron-right"></i>
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </motion.div>
@@ -383,9 +416,11 @@ export default function Explore() {
                 >
                   <div className="relative">
                     <img 
-                      src={work.thumbnail} 
+                      src={imageErrors[work.id] ? getPlaceholderImage('thumbnail') : work.thumbnail} 
                       alt={work.title} 
                       className="w-full h-48 object-cover"
+                      onError={() => handleImageError(work.id)}
+                      loading="lazy"
                     />
                     <div className="absolute top-3 right-3">
                       <button 
@@ -397,7 +432,7 @@ export default function Explore() {
                           isDark ? 'bg-gray-900 bg-opacity-70 hover:bg-opacity-100' : 'bg-white bg-opacity-70 hover:bg-opacity-100'
                         }`}
                       >
-                        <i className="far fa-heart"></i>
+                        <Heart className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -414,9 +449,11 @@ export default function Explore() {
                     
                     <div className="flex items-center mb-4">
                       <img 
-                        src={work.creatorAvatar} 
+                        src={imageErrors[work.id + 1000] ? getPlaceholderImage('avatar') : work.creatorAvatar} 
                         alt={work.creator} 
                         className="w-6 h-6 rounded-full mr-2"
+                        onError={() => handleImageError(work.id + 1000)}
+                        loading="lazy"
                       />
                       <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                         {work.creator}
@@ -438,15 +475,15 @@ export default function Explore() {
                     
                     <div className="flex justify-between text-sm">
                       <div className="flex items-center">
-                        <i className="far fa-eye mr-1"></i>
+                        <Eye className="w-4 h-4 mr-1" />
                         <span>{work.views}</span>
                       </div>
                       <div className="flex items-center">
-                        <i className="far fa-thumbs-up mr-1"></i>
+                        <ThumbsUp className="w-4 h-4 mr-1" />
                         <span>{work.likes}</span>
                       </div>
                       <div className="flex items-center">
-                        <i className="far fa-comment mr-1"></i>
+                        <MessageCircle className="w-4 h-4 mr-1" />
                         <span>{work.comments}</span>
                       </div>
                     </div>
@@ -457,7 +494,7 @@ export default function Explore() {
           ) : (
             <div className="text-center py-16">
               <div className="mb-4 text-5xl text-gray-400">
-                <i className="fas fa-search"></i>
+                <Search className="w-16 h-16 mx-auto" />
               </div>
               <h3 className="text-xl font-medium mb-2">未找到相关作品</h3>
               <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -468,11 +505,11 @@ export default function Explore() {
           
           {/* 加载更多 */}
           <div className="text-center mt-10">
-            <button className={`px-6 py-3 rounded-full transition-colors ${
+            <button className={`px-6 py-3 rounded-full transition-colors flex items-center justify-center ${
               isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 shadow-md'
             }`}>
               加载更多
-              <i className="fas fa-chevron-down ml-2"></i>
+              <ChevronDown className="w-4 h-4 ml-2" />
             </button>
           </div>
         </motion.div>
