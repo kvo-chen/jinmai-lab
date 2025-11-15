@@ -13,7 +13,7 @@ function getPlugins() {
 
 export default defineConfig({
   plugins: getPlugins(),
-  base: process.env.VERCEL ? '/' : '/jinmai-lab/',
+  base: '/jinmai-lab/', // GitHub Pages 基础路径
   server: {
     proxy: {
       '/api': {
