@@ -1,10 +1,12 @@
 {
   "builds": [
-    { "src": "index.html", "use": "@vercel/static" }
+    { "src": "dist/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/robots.txt", "dest": "/robots.txt" },
-    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/api/(.*)", "status": 404 },
+    { "src": "/assets/(.*)", "dest": "/dist/assets/$1" },
+    { "src": "/robots.txt", "dest": "/dist/robots.txt" },
+    { "src": "/sitemap.xml", "dest": "/dist/sitemap.xml" },
+    { "src": "/(.*)", "dest": "/dist/index.html" }
   ]
 }
