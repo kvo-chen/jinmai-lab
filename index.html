@@ -2,46 +2,49 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- SEO优化 -->
     <title>津门老字号AI共创坊 - AICE文化共创平台</title>
     <meta name="description" content="运用人工智能技术，为天津老字号品牌注入创新活力，传承文化精髓。支持AI智能创作、纯正性检查、多模态内容生成。" />
-    <meta name="keywords" content="津门老字号,AI共创坊,文化共创,天津老字号,AI创作,传统文化,品牌创新" />
-    <meta name="author" content="金脉实验室" />
-    
-    <!-- Open Graph标签 -->
-    <meta property="og:title" content="津门老字号AI共创坊 - AICE文化共创平台" />
-    <meta property="og:description" content="运用人工智能技术，为天津老字号品牌注入创新活力，传承文化精髓。" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.jinmai-lab.tech" />
-    
-    <!-- 搜索引擎优化 -->
     <meta name="robots" content="index,follow" />
     <link rel="canonical" href="https://www.jinmai-lab.tech" />
-    
-    <!-- 预加载关键资源 -->
-    <link rel="preload" href="/src/main.tsx" as="script" />
-    
-    <!-- 添加结构化数据 -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "津门老字号AI共创坊",
-      "description": "运用人工智能技术，为天津老字号品牌注入创新活力，传承文化精髓。",
-      "url": "https://www.jinmai-lab.tech",
-      "publisher": {
-        "@type": "Organization",
-        "name": "金脉实验室",
-        "url": "https://www.jinmai-lab.tech"
-      }
-    }
-    </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <main style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:920px;margin:40px auto;padding:0 20px;">
+      <h1 style="margin:0 0 12px;">津门老字号AI共创坊</h1>
+      <p style="margin:0 0 20px;color:#555;">运用人工智能技术，为天津老字号品牌注入创新活力，传承文化精髓。</p>
+      <section style="margin:20px 0;padding:16px;border:1px solid #eee;border-radius:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="apiBase" placeholder="API地址" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:6px;" />
+          <button id="saveApi" style="padding:8px 12px;border:1px solid #222;border-radius:6px;background:#222;color:#fff;">保存</button>
+          <button id="checkHealth" style="padding:8px 12px;border:1px solid #222;border-radius:6px;background:#fff;color:#222;">健康检测</button>
+        </div>
+        <pre id="result" style="background:#f7f7f7;border:1px solid #eee;border-radius:8px;padding:12px;margin-top:12px;overflow:auto;"></pre>
+      </section>
+    </main>
+    <script>
+      const defaultApi = 'http://127.0.0.1:8080';
+      let API_BASE = defaultApi;
+      fetch('config.json').then(r => r.ok ? r.json() : {}).then(c => { if (c && c.API_BASE) API_BASE = c.API_BASE; init(); }).catch(() => init());
+      function init(){
+        const input = document.getElementById('apiBase');
+        const save = document.getElementById('saveApi');
+        const btn = document.getElementById('checkHealth');
+        const out = document.getElementById('result');
+        input.value = API_BASE;
+        save.onclick = () => { API_BASE = input.value.trim() || defaultApi; localStorage.setItem('API_BASE', API_BASE); };
+        const saved = localStorage.getItem('API_BASE');
+        if (saved) { API_BASE = saved; input.value = saved; }
+        btn.onclick = async () => {
+          out.textContent = '请求中...';
+          try {
+            const res = await fetch(API_BASE + '/api/health');
+            const data = await res.json();
+            out.textContent = JSON.stringify(data, null, 2);
+          } catch (e) {
+            out.textContent = '请求失败: ' + e.message;
+          }
+        };
+      }
+    </script>
   </body>
 </html>
