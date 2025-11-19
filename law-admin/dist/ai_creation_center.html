@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>津脉智坊 - AI创作中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .ai-workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .creation-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .result-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-models {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .model-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .model-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .model-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .model-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .model-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .model-desc {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+
+        .creation-result {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 200px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .result-meta {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .result-content {
+            line-height: 1.6;
+            color: #34495e;
+            white-space: pre-wrap;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .suggestion-tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-tag:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .history-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .history-prompt {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .history-result {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .history-time {
+            font-size: 0.8em;
+            color: #95a5a6;
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .ai-workspace {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-models {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 AI创作中心</h1>
+            <div class="subtitle">津脉智坊 - 智能内容创作平台</div>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-secondary" onclick="window.location.href='platform_demo.html'">
+                    ← 返回平台首页
+                </button>
+                <button class="btn btn-primary" onclick="loadAIModels()">
+                    🔄 刷新AI模型
+                </button>
+            </div>
+        </div>
+
+        <div class="ai-workspace">
+            <div class="creation-panel">
+                <div class="panel-title">
+                    <span>🤖</span>
+                    <span>AI创作工具</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="brandSelect">选择品牌</label>
+                    <select id="brandSelect" class="form-control">
+                        <option value="">请选择天津传统品牌</option>
+                        <option value="1">狗不理包子 - 传统美食</option>
+                        <option value="2">耳朵眼炸糕 - 传统糕点</option>
+                        <option value="3">十八街麻花 - 传统糕点</option>
+                        <option value="4">杨柳青年画 - 传统艺术</option>
+                        <option value="5">泥人张 - 传统艺术</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="creationType">创作类型</label>
+                    <select id="creationType" class="form-control">
+                        <option value="STORY">品牌故事</option>
+                        <option value="INTRODUCTION">品牌介绍</option>
+                        <option value="CRAFT">制作工艺</option>
+                        <option value="CULTURE">文化内涵</option>
+                        <option value="HISTORY">历史传承</option>
+                        <option value="MODERN">现代发展</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="customPrompt">创作要求</label>
+                    <textarea id="customPrompt" class="form-control" rows="3" 
+                              placeholder="请输入具体的创作要求，比如：讲述这个品牌的创立故事、介绍传统制作工艺等..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>选择AI模型</label>
+                    <div id="aiModels" class="ai-models">
+                        <div class="loading active">
+                            <div class="spinner"></div>
+                            <div>正在加载AI模型...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 25px;">
+                    <button class="btn btn-primary" onclick="createContent()" style="flex: 1;">
+                        <span>🚀</span>
+                        <span>开始创作</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="getSuggestions()">
+                        <span>💡</span>
+                        <span>获取建议</span>
+                    </button>
+                </div>
+
+                <div id="suggestions" class="suggestions" style="display: none;"></div>
+            </div>
+
+            <div class="result-panel">
+                <div class="panel-title">
+                    <span>📋</span>
+                    <span>创作结果</span>
+                </div>
+
+                <div id="creationResult" class="creation-result" style="display: none;">
+                    <div class="result-header">
+                        <div class="result-title" id="resultTitle">创作结果</div>
+                        <div class="result-meta" id="resultMeta"></div>
+                    </div>
+                    <div class="result-content" id="resultContent">
+                        请选择品牌并点击"开始创作"按钮
+                    </div>
+                </div>
+
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <div>AI正在创作中，请稍候...</div>
+                </div>
+
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-state-icon">🎨</div>
+                    <div>选择品牌和要求，开始您的AI创作之旅</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-panel">
+            <div class="panel-title">
+                <span>📚</span>
+                <span>创作历史</span>
+            </div>
+            <div id="creationHistory">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📝</div>
+                    <div>暂无创作历史</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        let selectedModel = null;
+        let creationHistory = [];
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAIModels();
+            loadCreationHistory();
+        });
+
+        // 加载AI模型
+        async function loadAIModels() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/ai/models`);
+                const models = await response.json();
+                
+                const container = document.getElementById('aiModels');
+                container.innerHTML = '';
+                
+                models.forEach(model => {
+                    const modelCard = document.createElement('div');
+                    modelCard.className = 'model-card';
+                    modelCard.innerHTML = `
+                        <div class="model-icon">${getModelIcon(model.type)}</div>
+                        <div class="model-name">${model.name}</div>
+                        <div class="model-desc">${model.description}</div>
+                    `;
+                    
+                    modelCard.addEventListener('click', () => selectModel(model, modelCard));
+                    container.appendChild(modelCard);
+                });
+                
+                // 默认选择第一个模型
+                if (models.length > 0) {
+                    selectModel(models[0], container.firstChild);
+                }
+                
+            } catch (error) {
+                console.error('加载AI模型失败:', error);
+                document.getElementById('aiModels').innerHTML = '<div class="error">加载AI模型失败</div>';
+            }
+        }
+
+        // 获取模型图标
+        function getModelIcon(type) {
+            const icons = {
+                'TEXT_GENERATION': '📝',
+                'IMAGE_GENERATION': '🖼️',
+                'CONTENT_OPTIMIZATION': '✨',
+                'VIDEO_GENERATION': '🎬',
+                'AUDIO_GENERATION': '🎵'
+            };
+            return icons[type] || '🤖';
+        }
+
+        // 选择AI模型
+        function selectModel(model, element) {
+            // 移除之前的选中状态
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // 添加选中状态
+            element.classList.add('selected');
+            selectedModel = model;
+        }
+
+        // 获取创作建议
+        async function getSuggestions() {
+            const creationType = document.getElementById('creationType').value;
+            const brandSelect = document.getElementById('brandSelect');
+            const brandName = brandSelect.options[brandSelect.selectedIndex].text.split(' - ')[0];
+            
+            if (!brandSelect.value) {
+                alert('请先选择一个品牌');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/ai/suggestions?creationType=${creationType}`);
+                const suggestions = await response.json();
+                
+                const container = document.getElementById('suggestions');
+                container.innerHTML = '';
+                container.style.display = 'flex';
+                
+                suggestions.forEach(suggestion => {
+                    const tag = document.createElement('div');
+                    tag.className = 'suggestion-tag';
+                    tag.textContent = suggestion;
+                    tag.addEventListener('click', () => {
+                        document.getElementById('customPrompt').value = suggestion.replace('{brand}', brandName);
+                    });
+                    container.appendChild(tag);
+                });
+                
+            } catch (error) {
+                console.error('获取建议失败:', error);
+                alert('获取建议失败，请稍后重试');
+            }
+        }
+
+        // 创建内容
+        async function createContent() {
+            const brandSelect = document.getElementById('brandSelect');
+            const creationType = document.getElementById('creationType').value;
+            const customPrompt = document.getElementById('customPrompt').value;
+            
+            if (!brandSelect.value) {
+                alert('请选择一个品牌');
+                return;
+            }
+            
+            if (!selectedModel) {
+                alert('请选择一个AI模型');
+                return;
+            }
+            
+            if (!customPrompt.trim()) {
+                alert('请输入创作要求');
+                return;
+            }
+            
+            const brandName = brandSelect.options[brandSelect.selectedIndex].text.split(' - ')[0];
+            
+            // 显示加载状态
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('creationResult').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/ai/creations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        brandId: parseInt(brandSelect.value),
+                        brandName: brandName,
+                        creationType: creationType,
+                        aiModel: selectedModel.id,
+                        prompt: customPrompt,
+                        type: creationType
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'COMPLETED') {
+                    displayResult(result.result, brandName, creationType);
+                    saveToHistory(customPrompt, result.result, brandName, creationType);
+                } else {
+                    throw new Error('创作失败');
+                }
+                
+            } catch (error) {
+                console.error('创作失败:', error);
+                alert('AI创作失败，请稍后重试');
+                document.getElementById('emptyState').style.display = 'block';
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+
+        // 显示创作结果
+        function displayResult(result, brandName, creationType) {
+            const creationResult = document.getElementById('creationResult');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMeta = document.getElementById('resultMeta');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultTitle.textContent = result.title || `${brandName} - ${getCreationTypeName(creationType)}`;
+            resultMeta.textContent = `AI模型: ${selectedModel.name} | 置信度: ${(result.confidence * 100).toFixed(1)}% | 生成时间: ${new Date().toLocaleString()}`;
+            resultContent.textContent = result.content || '暂无内容';
+            
+            creationResult.style.display = 'block';
+        }
+
+        // 获取创作类型名称
+        function getCreationTypeName(type) {
+            const names = {
+                'STORY': '品牌故事',
+                'INTRODUCTION': '品牌介绍',
+                'CRAFT': '制作工艺',
+                'CULTURE': '文化内涵',
+                'HISTORY': '历史传承',
+                'MODERN': '现代发展'
+            };
+            return names[type] || '创作内容';
+        }
+
+        // 保存到历史记录
+        function saveToHistory(prompt, result, brandName, creationType) {
+            const historyItem = {
+                id: Date.now(),
+                prompt: prompt,
+                result: result,
+                brandName: brandName,
+                creationType: creationType,
+                modelName: selectedModel.name,
+                timestamp: new Date().toISOString()
+            };
+            
+            creationHistory.unshift(historyItem);
+            if (creationHistory.length > 10) {
+                creationHistory = creationHistory.slice(0, 10);
+            }
+            
+            localStorage.setItem('creationHistory', JSON.stringify(creationHistory));
+            displayCreationHistory();
+        }
+
+        // 加载创作历史
+        function loadCreationHistory() {
+            const saved = localStorage.getItem('creationHistory');
+            if (saved) {
+                creationHistory = JSON.parse(saved);
+                displayCreationHistory();
+            }
+        }
+
+        // 显示创作历史
+        function displayCreationHistory() {
+            const container = document.getElementById('creationHistory');
+            
+            if (creationHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div>暂无创作历史</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = creationHistory.map(item => `
+                <div class="history-item">
+                    <div class="history-prompt">${item.brandName} - ${getCreationTypeName(item.creationType)}</div>
+                    <div class="history-result">${item.result.content.substring(0, 150)}${item.result.content.length > 150 ? '...' : ''}</div>
+                    <div class="history-time">${new Date(item.timestamp).toLocaleString()} | AI模型: ${item.modelName}</div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

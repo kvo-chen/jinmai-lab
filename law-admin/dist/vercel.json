@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "platform_demo.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "ai_creation_center.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "enhanced_ai_creation_server.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/enhanced_ai_creation_server.py"
+    },
+    {
+      "src": "/ai",
+      "dest": "/ai_creation_center.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/platform_demo.html"
+    }
+  ],
+  "functions": {
+    "enhanced_ai_creation_server.py": {
+      "runtime": "python3.9"
+    }
+  },
+  "env": {
+    "FLASK_ENV": "production",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "buildCommand": "echo 'Static files ready'",
+  "outputDirectory": "."
+}
