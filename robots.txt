@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://jinmai-lab.tech/sitemap.xml
